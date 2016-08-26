@@ -18,7 +18,7 @@ if(!require(gridExtra)) { install.packages("gridExtra",
 
 
 ## Local Base Directory. Change to the one you'll use to store your audios
-PitchDirectory = "/tmp"
+PitchDirectory = "/tmp/"
 
 ## Utility and functional routines
 source('src/util.R', local = TRUE)
