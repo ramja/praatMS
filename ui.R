@@ -4,12 +4,21 @@
 #
 # http://shiny.rstudio.com
 #
+if(!require(shiny)) { install.packages("shiny",
+                      repos="http://cran.us.r-project.org", dependencies=TRUE) }
 
-library("shiny")
-library("shinydashboard")
-library("networkD3")
-library("plotly")
-library("ggplot2") 
+if(!require(shinydashboard)) { install.packages("shinydashboard",
+                                repos="http://cran.us.r-project.org", dependencies=TRUE) }
+
+if(!require(networkD3)) { install.packages("networkD3", 
+                           repos="http://cran.us.r-project.org", dependencies=TRUE) }
+
+if(!require(plotly)) { install.packages("plotly", 
+                        repos="http://cran.us.r-project.org", dependencies=TRUE) }
+
+if(!require(ggplot2)) { install.packages("ggplot2",
+                        repos="http://cran.us.r-project.org", dependencies=TRUE) }
+
 
 ui<-dashboardPage(
   
@@ -33,10 +42,10 @@ ui<-dashboardPage(
     tabItems(
 
       tabItem(tabName = "senal",h2("Señales")
-              , plotlyOutput("sigPlot"),
+              , column(12,plotlyOutput("sigPlot")),
               conditionalPanel(
                 condition = "input.comp == true",
-                plotlyOutput("sigPlot2")
+                column(12,plotlyOutput("sigPlot2"))
               )
               
       ),
@@ -60,8 +69,8 @@ ui<-dashboardPage(
               splitLayout(cellWidths = c("50%", "50%"), plotlyOutput("hisInt1Plot"), plotlyOutput("hisInt2Plot"))),
               conditionalPanel(
                 condition = "input.comp == true",
-                splitLayout(cellWidths = c("50%", "50%"), plotlyOutput("hisF01Plot2"), plotlyOutput("hisF02Plot2")),
-                splitLayout(cellWidths = c("50%", "50%"), plotlyOutput("hisInt1Plot2"), plotlyOutput("hisInt2Plot2"))
+                column(12,splitLayout(cellWidths = c("50%", "50%"), plotlyOutput("hisF01Plot2"), plotlyOutput("hisF02Plot2")),
+                splitLayout(cellWidths = c("50%", "50%"), plotlyOutput("hisInt1Plot2"), plotlyOutput("hisInt2Plot2")))
               )
 
       ),

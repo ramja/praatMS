@@ -1,3 +1,6 @@
+### We use part of scripts of praatR from 
+##  Aaron Albin (www.aaronalbin.com)
+
 getIntervals <- function(RichData) {
   ##We analize the silence intervals
   ##Parameter silence threshold: miliseconds without F0 component detectable

@@ -52,7 +52,7 @@ cl3 <- pam(gDesc, 2)$clustering
 
 
 #obtain first 5 letters of fileName to name the nodes of the graph
-prefix<-substr(fileName, 1, 5)
+prefix<-paste(substr(fileName, 1, 4),"-",sep = "")
 #compute al the edges of the graph
 edges <- c(paste(prefix, 1))
 for (i in inter$SilIntervals[, 1]) {
@@ -77,7 +77,9 @@ V(dataGraph)$pitchr <- c(0, gStat$F0Range, 0)
 V(dataGraph)$intensity <- c(0, gStat$Intensity, 0)
 
 ##write graph to a .graphml format
-write.graph(dataGraph,"lc_edgelist.graphml", "graphml")
+graphFileName=paste(substr(fileName, 1, 4),".graphml", sep="")
+
+write.graph(dataGraph,graphFileName, "graphml")
 
 
 

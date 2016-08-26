@@ -3,16 +3,22 @@
 
 # We load libraries we gonna use
 #
-library("audio")
-library("PraatR")
-library("cluster")
-library("igraph")
-library('ggfortify')
-library('barcode')
-library("gridExtra")
-library("datasets")
+if(!require(audio)) { install.packages("audio",
+                      repos="http://cran.us.r-project.org", dependencies=TRUE) }
+if(!require(PraatR)) { install.packages("PraatR",
+                        repos="http://cran.us.r-project.org", dependencies=TRUE) }
+if(!require(cluster)) { install.packages("cluster",
+                        repos="http://cran.us.r-project.org", dependencies=TRUE) }
+if(!require(igraph)) { install.packages("igraph",
+                        repos="http://cran.us.r-project.org", dependencies=TRUE) }
+if(!require(ggfortify)) { install.packages("ggfortify",
+                          repos="http://cran.us.r-project.org", dependencies=TRUE) }
+if(!require(gridExtra)) { install.packages("gridExtra",
+                          repos="http://cran.us.r-project.org", dependencies=TRUE) }
+
+
 ## Local Base Directory. Change to the one you'll use to store your audios
-PitchDirectory = "C:/Audio/pitch/"
+PitchDirectory = "/tmp"
 
 ## Utility and functional routines
 source('src/util.R', local = TRUE)
@@ -216,12 +222,7 @@ shinyServer(function(input, output) {
     
   })
   
-  output$barPlot <- renderPlotly({
-    inter <- gInter()
-    if (!is.null(inter)) {
-      ggplotGrob(barcode(inter$SilIntervals[, 1]))
-    }
-  })
+
   
   output$custPlot <- renderPlotly({
     data <- gDesc()
@@ -279,9 +280,11 @@ shinyServer(function(input, output) {
     data <- dClust()
     if (!is.null(data)) {
       # Extract first participant F0
-      F0<-na.omit(data$F0$`1`)
+      Entonación<-na.omit(data$F0$`1`)
       # Plot the result
-      gg <- qplot(F0, geom = "histogram", fill=I("tomato2"))
+      gg <- qplot(Entonación, geom = "histogram", fill=I("tomato2")) +
+            geom_vline(aes(xintercept=mean(Entonación, na.rm=T)),   # Ignore NA values for mean
+            color="red", linetype="dashed", size=1)
       
       # Convert the ggplot to a plotly
       p <- ggplotly(gg)
@@ -294,7 +297,9 @@ shinyServer(function(input, output) {
       # Extract first participant F0
       Entonación<-na.omit(data$F0$`2`)
       # Plot the result
-      gg <- qplot(Entonación, geom = "histogram", fill=I("steelblue2") )
+      gg <- qplot(Entonación, geom = "histogram", fill=I("steelblue2") ) +
+            geom_vline(aes(xintercept=mean(Entonación, na.rm=T)),   # Ignore NA values for mean
+            color="red", linetype="dashed", size=1)
       
       # Convert the ggplot to a plotly
       p <- ggplotly(gg)
@@ -305,9 +310,11 @@ shinyServer(function(input, output) {
     data <- dClust2()
     if (!is.null(data)) {
       # Extract first participant F0
-      F0<-na.omit(data$F0$`1`)      
+      Entonación<-na.omit(data$F0$`1`)
       # Plot the result
-      gg <- qplot(F0, geom = "histogram",  fill=I("tomato2")) 
+      gg <- qplot(Entonación, geom = "histogram", fill=I("tomato2")) +
+            geom_vline(aes(xintercept=mean(Entonación, na.rm=T)),   # Ignore NA values for mean
+            color="red", linetype="dashed", size=1)
       
       # Convert the ggplot to a plotly
       p <- ggplotly(gg)
@@ -318,15 +325,43 @@ shinyServer(function(input, output) {
     data <- dClust2()
     if (!is.null(data)) {
       # Extract first participant F0
-      F0<-na.omit(data$F0$`2`)
+      Entonación<-na.omit(data$F0$`2`)
       # Plot the result
-      gg <- qplot(F0, geom = "histogram",  fill=I("steelblue2"))
+      gg <- qplot(Entonación, geom = "histogram", fill=I("steelblue2") ) +
+            geom_vline(aes(xintercept=mean(Entonación, na.rm=T)),   # Ignore NA values for mean
+            color="red", linetype="dashed", size=1)
       
       # Convert the ggplot to a plotly
       p <- ggplotly(gg)
       p
     }
-  })
+  })  
+  # output$hisF01Plot2 <- renderPlotly({
+  #   data <- dClust2()
+  #   if (!is.null(data)) {
+  #     # Extract first participant F0
+  #     Entonación<-na.omit(data$F0$`1`)      
+  #     # Plot the result
+  #     gg <- qplot(Entonación, geom = "histogram",  fill=I("tomato2")) 
+  #     
+  #     # Convert the ggplot to a plotly
+  #     p <- ggplotly(gg)
+  #     p
+  #   }
+  # })
+  # output$hisF02Plot2 <- renderPlotly({
+  #   data <- dClust2()
+  #   if (!is.null(data)) {
+  #     # Extract first participant F0
+  #     Entonación<-na.omit(data$F0$`2`)
+  #     # Plot the result
+  #     gg <- qplot(Entonación, geom = "histogram",  fill=I("steelblue2"))
+  #     
+  #     # Convert the ggplot to a plotly
+  #     p <- ggplotly(gg)
+  #     p
+  #   }
+  # })
   output$hisInt1Plot <- renderPlotly({
     data <- dClust()
     if (!is.null(data)) {
@@ -424,8 +459,8 @@ shinyServer(function(input, output) {
       convers_d3$nodes$group <- c(0, cl3, 0)
       gData = gStat()
       convers_d3$nodes$weight <- c(0, gData$Duration, 0)
-      convers_d3$pitchr <- c(0, gStat$F0Range, 0)
-      convers_d3$intensity <- c(0, gStat$Intensity, 0)
+      convers_d3$pitchr <- c(0, gData$F0Range, 0)
+      convers_d3$intensity <- c(0, gData$Intensity, 0)
       
       forceNetwork(
         Links = convers_d3$links,
@@ -469,8 +504,8 @@ shinyServer(function(input, output) {
     convers_d3$nodes$group <- c(0, cl3, 0)
     gData = gStat2()
     convers_d3$nodes$weight <- c(0, gData$Duration, 0)
-    convers_d3$pitchr <- c(0, gStat$F0Range, 0)
-    convers_d3$intensity <- c(0, gStat$Intensity, 0)
+    convers_d3$pitchr <- c(0, gData$F0Range, 0)
+    convers_d3$intensity <- c(0, gData$Intensity, 0)
     
     forceNetwork(
       Links = convers_d3$links,
