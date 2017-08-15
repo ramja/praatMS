@@ -3,9 +3,9 @@
 
 # We load libraries we gonna use
 #
-if(!require(audio)) { install.packages("audio",
+if(!require(ggcorrplot)) { install.packages("ggcorrplot",
                       repos="http://cran.us.r-project.org", dependencies=TRUE) }
-if(!require(PraatR)) { install.packages("PraatR",
+if(!require(qgraph)) { install.packages("qgraph",
                         repos="http://cran.us.r-project.org", dependencies=TRUE) }
 if(!require(cluster)) { install.packages("cluster",
                         repos="http://cran.us.r-project.org", dependencies=TRUE) }
@@ -21,8 +21,9 @@ if(!require(gridExtra)) { install.packages("gridExtra",
 PitchDirectory = "/tmp/"
 
 ## Utility and functional routines
-source('src/util.R', local = TRUE)
-source('src/preProcFunctions.R', local = TRUE)
+#source('src/util.R', local = TRUE)
+#source('src/preProcFunctions.R', local = TRUE)
+
 
 ## This functions adds local directory to file to make a full path
 FullPath = function(FileName) {
@@ -38,7 +39,125 @@ CurrentFileNames = c(list.files(pattern = "wav$"))
 
 
 
-shinyServer(function(input, output) {
+shinyServer(function(input, output, session) {
+  observe(print(input$ohs))
+  #observe(ohsInput())
+  
+  observe({
+    if(input$selectall1 == 0) return(NULL) 
+    else if (input$selectall1%%2 == 0)
+    {
+      updateCheckboxGroupInput(session,"cpn","Seleccione servidores:",choices=certisat_ara_cpn)
+    }
+    else
+    {
+      updateCheckboxGroupInput(session,"cpn","Seleccione servidores:",choices=certisat_ara_cpn,selected=certisat_ara_cpn)
+    }
+  })
+  
+  observe({
+    if(input$selectall2 == 0) return(NULL) 
+    else if (input$selectall2%%2 == 0)
+    {
+      updateCheckboxGroupInput(session,"adm","Seleccione servidores:",choices=rfc_weblogic_adm)
+    }
+    else
+    {
+      updateCheckboxGroupInput(session,"adm","Seleccione servidores:",choices=rfc_weblogic_adm,selected=rfc_weblogic_adm)
+    }
+  })
+  
+  observe({
+    if(input$selectall3 == 0) return(NULL) 
+    else if (input$selectall3%%2 == 0)
+    {
+      updateCheckboxGroupInput(session,"emp","Seleccione servidores:",choices=rfc_weblogic_emp)
+    }
+    else
+    {
+      updateCheckboxGroupInput(session,"emp","Seleccione servidores:",choices=rfc_weblogic_emp,selected=rfc_weblogic_emp)
+    }
+  })
+  
+  observe({
+    if(input$selectall4 == 0) return(NULL) 
+    else if (input$selectall4%%2 == 0)
+    {
+      updateCheckboxGroupInput(session,"contr","Seleccione servidores:",choices=rfc_weblogic_contr)
+    }
+    else
+    {
+      updateCheckboxGroupInput(session,"contr","Seleccione servidores:",choices=rfc_weblogic_contr,selected=rfc_weblogic_contr)
+    }
+  })
+  
+  observe({
+    if(input$selectall5 == 0) return(NULL) 
+    else if (input$selectall5%%2 == 0)
+    {
+      updateCheckboxGroupInput(session,"buz","Seleccione servidores:",choices=buzon_web_contr)
+    }
+    else
+    {
+      updateCheckboxGroupInput(session,"buz","Seleccione servidores:",choices=buzon_web_contr,selected=rfc_weblogic_contr)
+    }
+  })
+
+  observe({
+    if(input$selectall6 == 0) return(NULL) 
+    else if (input$selectall6%%2 == 0)
+    {
+      updateCheckboxGroupInput(session,"certi_pres","Seleccione servidores:",choices=certisat_pres_jboss)
+    }
+    else
+    {
+      updateCheckboxGroupInput(session,"certi_pres","Seleccione servidores:",choices=certisat_pres_jboss,selected=certisat_pres_jboss)
+    }
+  })
+  
+  observe({
+    if(input$selectall7 == 0) return(NULL) 
+    else if (input$selectall7%%2 == 0)
+    {
+      updateCheckboxGroupInput(session,"ar","Seleccione servidores:",choices=certisat_pki_ar_proc)
+    }
+    else
+    {
+      updateCheckboxGroupInput(session,"ar","Seleccione servidores:",choices=certisat_pki_ar_proc,selected=certisat_pki_ar_proc)
+    }
+  })
+  
+  observe({
+    if(input$selectall8 == 0) return(NULL) 
+    else if (input$selectall8%%2 == 0)
+    {
+      updateCheckboxGroupInput(session,"ac","Seleccione servidores:",choices=certisat_pki_ac_proc)
+    }
+    else
+    {
+      updateCheckboxGroupInput(session,"ac","Seleccione servidores:",choices=certisat_pki_ac_proc,selected=certisat_pki_ac_proc)
+    }
+  })
+  
+  observe({
+    if(input$selectall9 == 0) return(NULL) 
+    else if (input$selectall9%%2 == 0)
+    {
+      updateCheckboxGroupInput(session,"qro","Seleccione servidores:",choices=certisat_ara_qro)
+    }
+    else
+    {
+      updateCheckboxGroupInput(session,"qro","Seleccione servidores:",choices=certisat_ara_qro,selected=certisat_ara_qro)
+    }
+  })
+  
+  # store as a vector to be called wherever desired
+  # evaluated whenever inputs change
+  ohsInput <- reactive({
+    perm.vector <- as.vector(input$ohs)
+    perm.vector
+  }) 
+  
   gFileNames <- reactive({
     # List of wav files to be analized
     c(list.files(pattern = "wav$"), "")
@@ -116,17 +235,161 @@ shinyServer(function(input, output) {
     
   })
   
-  gFileData <- reactive({
-    inFile <- input$inFile
-    if (!is.null(input$inFile)) {
-      withProgress(message = 'Analizando Conversación', value = 0, {
-        # on.exit(progress$close())
-        
-        # We get prosodic data from file using PraatR
-        getProsodicData(inFile)
-      })
+  gApp1Data <- reactive({
+    serv <- c()
+    if (!is.null(m)) {
+      
+      if (input$comp1) {
+        #serv <- c(serv, match(rfc_idc,cols))
+        #serv <- c(serv, match(input$certi_pres,cols))
+        serv <- c(serv, match(input$qro,cols))
+      }
+      if (input$comp2) {
+        serv <- c(serv, match(input$emp,cols))
+        serv <- c(serv, match(input$contr,cols))
+        serv <- c(serv, match(input$adm,cols))
+        #serv <- c(serv, match(input$buz,cols))
+        #serv <- c(serv, match(input$ar,cols))
+        #serv <- c(serv, match(input$ac,cols))
+        #serv <- c(serv, match(input$cpn,cols))
+        #serv <- c(serv, match(input$qro,cols))
+      }
+    } else {
+      print("ERROR")
     }
-    
+    return( unique(serv[!is.na(serv)]))
+  })
+  
+  gApp11Data <- reactive({
+    serv <- c()
+    if (!is.null(m)) {
+      
+      if (input$comp1) {
+        #serv <- c(serv, match(rfc_idc,cols))
+        #serv <- c(serv, match(input$certi_pres,cols))
+        serv <- c(serv, match(input$qro,cols))
+      }
+     
+    } else {
+      print("ERROR")
+    }
+    return( unique(serv[!is.na(serv)]))
+  })
+ 
+  gApp12Data <- reactive({
+    serv <- c()
+    if (!is.null(m)) {
+      
+      if (input$comp2) {
+        serv <- c(serv, match(input$emp,cols))
+      }
+      
+    } else {
+      print("ERROR")
+    }
+    return( unique(serv[!is.na(serv)]))
+  })   
+  
+  gApp13Data <- reactive({
+    serv <- c()
+    if (!is.null(m)) {
+      
+      if (input$comp2) {
+        serv <- c(serv, match(input$contr,cols))
+      }
+      
+    } else {
+      print("ERROR")
+    }
+    return( unique(serv[!is.na(serv)]))
+  })  
+  
+  gApp14Data <- reactive({
+    serv <- c()
+    if (!is.null(m)) {
+      
+      if (input$comp2) {
+        serv <- c(serv, match(input$adm,cols))
+      }
+      
+    } else {
+      print("ERROR")
+    }
+    return( unique(serv[!is.na(serv)]))
+  })    
+  
+  gApp2Data <- reactive({
+    serv <- c()
+    if (!is.null(m)) {
+      
+      if (input$comp1) {
+        #serv <- c(serv, match(rfc_idc,cols))
+        #serv <- c(serv, match(input$certi_pres,cols))
+      }
+      if (input$comp2) {
+        #serv <- c(serv, match(input$emp,cols))
+        #serv <- c(serv, match(input$contr,cols))
+        #serv <- c(serv, match(input$adm,cols))
+        serv <- c(serv, match(input$buz,cols))
+        #serv <- c(serv, match(input$ar,cols))
+        #serv <- c(serv, match(input$ac,cols))
+        #serv <- c(serv, match(input$cpn,cols))
+        #serv <- c(serv, match(input$qro,cols))
+      }
+    } else {
+      print("ERROR")
+    }
+    return( unique(serv[!is.na(serv)]))
+  })
+  
+  gApp3Data <- reactive({
+    serv <- c()
+    if (!is.null(m)) {
+      
+      if (input$comp1) {
+        #serv <- c(serv, match(rfc_idc,cols))
+        serv <- c(serv, match(input$certi_pres,cols))
+      }
+      if (input$comp2) {
+        #serv <- c(serv, match(input$emp,cols))
+        #serv <- c(serv, match(input$contr,cols))
+        #serv <- c(serv, match(input$adm,cols))
+        #serv <- c(serv, match(input$buz,cols))
+        serv <- c(serv, match(input$ar,cols))
+        serv <- c(serv, match(input$ac,cols))
+        serv <- c(serv, match(input$cpn,cols))
+        serv <- c(serv, match(input$qro,cols))
+      }
+    } else {
+      print("ERROR")
+    }
+    return( unique(serv[!is.na(serv)]))
+  })  
+  
+  gFileData <- reactive({
+    serv <- c()
+    if (!is.null(m)) {
+      
+      if (input$comp1) {
+        #serv <- c(serv, match(rfc_idc,cols))
+        serv <- c(serv, match(input$certi_pres,cols))
+      }
+      if (input$comp2) {
+        serv <- c(serv, match(input$ar,cols))
+        serv <- c(serv, match(input$ac,cols))
+        serv <- c(serv, match(input$cpn,cols))
+        serv <- c(serv, match(input$qro,cols))     
+        serv <- c(serv, match(input$buz,cols))
+        serv <- c(serv, match(input$emp,cols))
+        serv <- c(serv, match(input$contr,cols))
+        serv <- c(serv, match(input$adm,cols))
+
+
+      }
+    } else {
+      print("ERROR")
+    }
+    return( unique(serv[!is.na(serv)]))
   })
   
   gFileData2 <- reactive({
@@ -225,24 +488,96 @@ shinyServer(function(input, output) {
 
   
   output$custPlot <- renderPlotly({
-    data <- gDesc()
-    if (!is.null(data)) {
-      cl3 <- pam(data, 2)
+    #data <- gDesc()
+    if (!is.null(m)) {
+      # Histogram overlaid with kernel density curve
+      dat <- data.frame(x=interval, y=m[,1])
+      ##Slicing
+      serv <- c()
+      if (input$comp1) {
+      serv <- c(serv, match(rfc_idc,cols))
+      serv <- c(serv, match(ohs_contibuyentes,cols))
+      }
+      if (input$comp2) {
+        serv <- c(serv, match(rfc_weblogic_emp,cols))
+        serv <- c(serv, match(rfc_weblogic_contr,cols))
+        serv <- c(serv, match(rfc_weblogic_adm,cols))
+      }
+      #serv <- unique(serv[!is.na(serv)])
+      serv <- gFileData()
+      # # Compute correlations:
+      CorMat <- cor_auto(m[,serv])
+      # Visualize the correlation matrix
+      # --------------------------------
+      # method = "square" or "circle"
+      #if (input$comp3) {
+        gg<-ggcorrplot(CorMat,hc.order= FALSE,tl.cex = 3,sig.level = .60 ,insig = "blank")
+      #} else {
+      #  gg<-ggcorrplot(CorMat,hc.order= FALSE,tl.cex = 3 )#),insig = "blank")
+      #}
+      # Draw with black outline, white fill
+      #gg<-qplot(dat) +
+       # geom_histogram(binwidth=.5, colour="black", fill="white")
+      # Density curve
+      #gg <-ggplot(dat, aes(x=x)) #+ geom_density()
+      #gg <- ggplot(dat, aes(x=x)) + 
+      #  geom_histogram(aes(y=..density..),      # Histogram with density instead of count on y-axis
+      #                 binwidth=.5,
+      #                 colour="black", fill="white") +
+      #  geom_density(alpha=.2, fill="#FF6666")  # Overlay with transparent density plot
       
-      gg <- autoplot(cl3, frame = TRUE, frame.type = 'norm')
+      
       p <- ggplotly(gg)
       p
     }
   })
   
-  output$custPlot2 <- renderPlotly({
-    data <- gDesc2()
-    if (!is.null(data)) {
-      cl3 <- pam(data, 2)
+  output$corAppPlot <- renderPlotly({
+    #data <- gDesc()
+    if (!is.null(m)) {
+      # Histogram overlaid with kernel density curve
+      dat <- data.frame(x=interval, y=m[,1])
+      #serv <- unique(serv[!is.na(serv)])
+      serv <- gFileData()
+      # # Compute correlations:
+      CorMat <- cor_auto(m[,serv])
+      # Visualize the correlation matrix
+      # --------------------------------
+      # method = "square" or "circle"
+      gg<-ggcorrplot(CorMat,hc.order= TRUE,tl.cex = 3)
+      # Draw with black outline, white fill
+      #gg<-qplot(dat) +
+      # geom_histogram(binwidth=.5, colour="black", fill="white")
+      # Density curve
+      #gg <-ggplot(dat, aes(x=x)) #+ geom_density()
+      #gg <- ggplot(dat, aes(x=x)) + 
+      #  geom_histogram(aes(y=..density..),      # Histogram with density instead of count on y-axis
+      #                 binwidth=.5,
+      #                 colour="black", fill="white") +
+      #  geom_density(alpha=.2, fill="#FF6666")  # Overlay with transparent density plot
       
-      gg <- autoplot(cl3, frame = TRUE, frame.type = 'norm')
+      
       p <- ggplotly(gg)
       p
+    }
+  })
+  
+  output$plot2 <- renderPlot({
+    #data <- gDesc2()
+    if (!is.null(m)) {
+      #histogram(m[,1])
+      serv <- gFileData()
+      CorMat <- cor_auto(m[,serv])
+      # 
+      # # Compute graph with tuning = 0 (BIC):
+      BICgraph <- EBICglasso(CorMat, nrow(m), 0)
+      # # Compute graph with tuning = 0.5 (EBIC)
+      EBICgraph <- EBICglasso(CorMat, nrow(m), 0.5)
+      # 
+      #gg <- autoplot(cl3, frame = TRUE, frame.type = 'norm')
+      c<-input$control
+      qgraph(BICgraph, layout = "spring", cut = c, title = "Gráfica de Correlación", details = TRUE, mode("Direct"))
+      #p
     }
   })
   
@@ -401,19 +736,66 @@ shinyServer(function(input, output) {
       p
     }
   })
-  output$hisInt2Plot2 <- renderPlotly({
-    data <- dClust2()
-    if (!is.null(data)) {
-      # Extract first participant F0
-      Intensidad<-na.omit(data$Intensity$`2`)
-      # Plot the result
-      gg <- qplot(Intensidad, geom = "histogram", fill=I("steelblue2"))
-      
-      # Convert the ggplot to a plotly
-      p <- ggplotly(gg)
-      p
+   
+  output$mytable = renderDataTable({
+   tabla
+  })
+  
+  output$tabla1 <- renderPlot({
+    #data <- dClust2()
+    
+    r<-t[1:12,]
+    if (!is.null(r)) {
+      grid.table(t(r))
     }
-  })    
+
+  })   
+  
+  output$tabla2 <- renderPlot({
+    #data <- dClust2()
+    
+    r<-t[13:24,]
+    if (!is.null(r)) {
+      grid.table(t(r))
+    }
+  })  
+  
+  output$tabla3 <- renderPlot({
+    #data <- dClust2()
+    
+    r<-t[25:36,]
+    if (!is.null(r)) {
+      grid.table(t(r))
+    }
+  })  
+    
+  output$tabla4 <- renderPlot({
+    #data <- dClust2()
+    
+    r<-t[37:48,]
+    if (!is.null(r)) {
+      grid.table(t(r))
+    }
+  })  
+  
+  output$tabla5 <- renderPlot({
+    #data <- dClust2()
+    
+    r<-t[49:60,]
+    if (!is.null(r)) {
+      grid.table(t(r))
+    }
+  })  
+ 
+  output$tabla6 <- renderPlot({
+    #data <- dClust2()
+    
+    r<-t[61:63,]
+    if (!is.null(r)) {
+      grid.table(t(r))
+    }
+  })  
+  
   
   output$his2Plot <- renderPlotly({
     input$goButton
