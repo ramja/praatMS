@@ -1,6 +1,13 @@
 # praatMS
 Tools for prosodic analysis of audio conversations using PraatR
 
+
+## Explanation
+The aim of this project is to "visualize" cooperation on audio recording of conversations. It is observed that in conversations in which 2 persons are cooperating for a mutual goal the distribution of somo property of the audio signal (F0) follows a normal distribution. If the conversation is altered by one or the two participants this distribution is also altered:
+
+![GitHub Logo](/images/cooperation.png)
+Format: ![Alt Text](url)
+
 ## Visualization tool
 To execute visualization tool execute from RStudio:
 
