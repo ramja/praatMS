@@ -22,26 +22,26 @@ if(!require(ggplot2)) { install.packages("ggplot2",
 
 ui<-dashboardPage(
   
-  dashboardHeader(title ="Análisis de Prosodia"),
+  dashboardHeader(title ="Prosodic Analisys"),
   dashboardSidebar(
     sidebarMenu(
       
-      checkboxInput("comp", "Comparar"),
+      checkboxInput("comp", "Compare"),
       uiOutput("fileControl"),
       conditionalPanel(
         condition = "input.comp == true",
         uiOutput("fileControl2")
       ),
-      menuItem("A) Señales", tabName = "senal"), 
-      menuItem("B) Análisis de Segmentos", tabName = "segmentos"), 
-      menuItem("C) Participantes", tabName = "comparacion"),
-      menuItem("D) Visualización", tabName = "grafo")      
+      menuItem("A) Signals", tabName = "senal"), 
+      menuItem("B) Segment Analisys", tabName = "segmentos"), 
+      menuItem("C) Participants", tabName = "comparacion"),
+      menuItem("D) Visualizatión", tabName = "grafo")        
     )
   ),
   dashboardBody(
     tabItems(
 
-      tabItem(tabName = "senal",h2("Señales")
+      tabItem(tabName = "senal",h2("Signals")
               , column(12,plotlyOutput("sigPlot")),
               conditionalPanel(
                 condition = "input.comp == true",
@@ -50,7 +50,7 @@ ui<-dashboardPage(
               
       ),
       
-      tabItem(tabName = "segmentos",h2("Segmentos")
+      tabItem(tabName = "segmentos",h2("Segments")
               , plotlyOutput("custPlot"),
               conditionalPanel(
                 condition = "input.comp == true",
@@ -58,7 +58,7 @@ ui<-dashboardPage(
               )
       ), 
       
-      tabItem(tabName = "comparacion",h2("Participantes"),
+      tabItem(tabName = "comparacion",h2("Participants"),
               #,fluidRow(
               #   # box(title = "Box title",plotlyOutput("his1Plot")),
               #   # box(title = "Box title",plotlyOutput("hisPlot2")),
@@ -74,7 +74,7 @@ ui<-dashboardPage(
               )
 
       ),
-      tabItem(tabName = "grafo",h2("Grafos")
+      tabItem(tabName = "grafo",h2("Graphs")
               ,forceNetworkOutput("force"),
               conditionalPanel(
                 condition = "input.comp == true",
