@@ -1,13 +1,11 @@
-FROM  rocker/r-ver:3.4.2
+FROM  rocker/rstudio:3.4.2
 
 RUN apt-get update && apt-get -y install zlib1g-dev gtk+2.0 libasound2 libssl-dev curl libcurl4-openssl-dev wget
-
-ADD F_0101_10y4m_1.wav /tmp
 
 WORKDIR /usr/bin
 
 
-RUN Rscript -e "install.packages(c('git2r','devtools' ,'dplyr','plotly', 'audio', 'cluster', 'igraph','ggfortify', 'gridExtra','shiny', 'ggplot2', 'shinydashboard', 'shinydashboard')  )"
+RUN Rscript -e "install.packages(c('git2r','devtools' ,'dplyr','plotly', 'audio', 'cluster', 'igraph','ggfortify', 'gridExtra','shiny', 'ggplot2', 'shinydashboard', 'shinydashboard', 'networkD3')  )"
 
 RUN Rscript -e "install.packages('')" -e "install.packages('devtools')" -e "devtools:::install_github('usagi5886/PraatR')"
 

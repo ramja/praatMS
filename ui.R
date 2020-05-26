@@ -10,6 +10,9 @@ if(!require(shiny)) { install.packages("shiny",
 if(!require(shinydashboard)) { install.packages("shinydashboard",
                                 repos="http://cran.us.r-project.org", dependencies=TRUE) }
 
+if(!require(igraph)) { install.packages("igraph",
+                                        repos="http://cran.us.r-project.org", dependencies=TRUE) }
+
 if(!require(networkD3)) { install.packages("networkD3", 
                            repos="http://cran.us.r-project.org", dependencies=TRUE) }
 
