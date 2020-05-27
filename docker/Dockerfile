@@ -13,6 +13,6 @@ RUN wget https://github.com/praat/praat/releases/download/v6.0.20/praat6020_linu
 
 RUN tar -zxvf /usr/bin/praat6020_linux64.tar.gz
 
-
+RUN /init
 
 

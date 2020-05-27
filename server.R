@@ -422,7 +422,7 @@ shinyServer(function(input, output) {
       }
       edges <- edges[-length(edges)]
       dataGraph <-
-        graph(edges,
+        make_graph(edges,
               n = length(inter$SilIntervals),
               directed = TRUE)
       # Convert to object suitable for networkD3
@@ -467,7 +467,7 @@ shinyServer(function(input, output) {
     }
     edges <- edges[-length(edges)]
     dataGraph <-
-      graph(edges,
+      make_graph(edges,
             n = length(inter$SilIntervals),
             directed = TRUE)
     # Convert to object suitable for networkD3
