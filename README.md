@@ -39,7 +39,7 @@ Format: ![Alt Text](url)
 To execute visualization tool execute from RStudio:
 
 
-...................................
+
 `shiny::runGitHub('ramja/praatMS', 'rstudio')`
 
 previously install manually rPraat lingustic package on the system. For ubuntu:
