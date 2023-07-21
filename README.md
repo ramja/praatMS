@@ -60,6 +60,6 @@ PraatR library is no longer mainained for current R versions. For compatibility 
 
 For a quick review of this code execute the following docker command:
 
-`docker run --network host -e PASSWORD=yourpass --name praatviz -v /path/to/audios:/tmp  ramja/praatrviz  Rscript -e "shiny::runGitHub('ramja/praatMS', 'rstudio')"`
+`docker run --network host -e PASSWORD=yourpass --name praatviz -p 8787:8787 -v /path/to/audios:/tmp  ramja/praatrviz  Rscript -e "shiny::runGitHub('ramja/praatMS', 'rstudio')"`
 
 
