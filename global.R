@@ -22,7 +22,7 @@ if(!require(audio)) { install.packages("audio",
 
 if(!require(cluster)) { install.packages("cluster",
                                          repos="http://cran.us.r-project.org", dependencies=TRUE) }
-if(!require(igraph)) {  install_inplaces("igraph") }
+if(!require(igraph)) {  install_inplace("igraph") }
 if(!require(ggfortify)) { install.packages("ggfortify",
                                            repos="http://cran.us.r-project.org", dependencies=TRUE) }
 if(!require(gridExtra)) { install.packages("gridExtra",
