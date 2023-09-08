@@ -1,7 +1,11 @@
-
+## Utility and functional routines
+source('src/util.R', local = TRUE)
+source('src/preProcFunctions.R', local = TRUE)
 
 # We load libraries we gonna use
 #
+
+
 
 if(!require(git2r)) { install.packages("git2r", 
                                        repos="http://cran.us.r-project.org", dependencies=TRUE) }
@@ -18,8 +22,7 @@ if(!require(audio)) { install.packages("audio",
 
 if(!require(cluster)) { install.packages("cluster",
                                          repos="http://cran.us.r-project.org", dependencies=TRUE) }
-if(!require(igraph)) { install.packages("igraph",
-                                        repos="http://cran.us.r-project.org", dependencies=TRUE) }
+if(!require(igraph)) {  install_inplaces("igraph") }
 if(!require(ggfortify)) { install.packages("ggfortify",
                                            repos="http://cran.us.r-project.org", dependencies=TRUE) }
 if(!require(gridExtra)) { install.packages("gridExtra",
