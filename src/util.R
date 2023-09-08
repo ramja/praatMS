@@ -2,7 +2,7 @@
 FullPath = function(FileName){ return( paste(PitchDirectory,FileName,sep="") ) }
 
 #Install in place
-install_inplace(pkg = NULL) {
+install_inplace<-function(pkg = NULL) {
   pck.set  <- rbind(c("igraph","igraph_1.2.1.tar.gz","http://cran.r-project.org/src/contrib/Archive/igraph/igraph_1.2.1.tar.gz"))
   if  %in% pck.set[1] {
     url<-pck.set[pck.set[1]==pkg][3]
